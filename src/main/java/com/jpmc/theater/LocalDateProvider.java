@@ -3,6 +3,10 @@ package com.jpmc.theater;
 import java.time.LocalDate;
 
 public class LocalDateProvider {
+
+    private LocalDateProvider(){
+
+    }
     private static LocalDateProvider instance = null;
 
     /**

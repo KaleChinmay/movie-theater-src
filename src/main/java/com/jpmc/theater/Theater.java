@@ -17,6 +17,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static Util.Constants.CONFIG_FILE;
 
@@ -25,7 +26,7 @@ import static Util.Constants.CONFIG_FILE;
  * Contains Showing list, LocalDateProvider object, main function, reserve function and initialize json data function.
  */
 public class Theater {
-
+    private static final Logger LOGGER = Logger.getLogger(Theater.class.getName());
     LocalDateProvider provider;
     private List<Showing> schedule;
 
@@ -40,6 +41,7 @@ public class Theater {
      * @return Returns list of showings
      */
     public List<Showing> initialize(String fileName){
+        LOGGER.info("Initializing... Getting movie showings data from file");
         List<Showing> inputShowings = new ArrayList<>();
         LocalDate currentDate = provider.currentDate();
         JSONParser parser = new JSONParser();
@@ -73,7 +75,10 @@ public class Theater {
             throw new RuntimeException(e);
         } catch (ParseException e) {
             throw new RuntimeException(e);
-        }
+        } catch (Exception e) {
+        throw new RuntimeException(e);
+    }
+        LOGGER.info("Successfully parsed JSON file into Showings object");
         return inputShowings;
     }
 
@@ -86,14 +91,15 @@ public class Theater {
      */
     public Reservation reserve(Customer customer, int sequence, int howManyTickets) {
         Showing showing;
+        LOGGER.info("Reserving...");
         try {
             //Return available showing
             //Since array starts with zero index, do sequence -1.
             showing = schedule.get(sequence - 1);
         } catch (RuntimeException ex) {
-            ex.printStackTrace();
             throw new IllegalStateException("Not able to find any showing for given sequence " + sequence);
         }
+        LOGGER.info(howManyTickets+" tickets reserved Successfully");
         return new Reservation(customer, showing, howManyTickets);
     }
 
@@ -110,7 +116,7 @@ public class Theater {
     }
 
     /**
-     * Prints pretty Json String
+     * Prints pretty Json String using gson library
      */
     public void printScheduleJson(){
         Gson gson = new GsonBuilder().setPrettyPrinting().create();

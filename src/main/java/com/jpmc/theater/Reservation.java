@@ -1,6 +1,8 @@
 package com.jpmc.theater;
 
 
+import java.util.Objects;
+
 /**
  * Reservation class
  * Contains customer object, showing object and count of audience the customer is booking
@@ -46,5 +48,27 @@ public class Reservation {
      */
     public double totalFee() {
         return showing.calculateTicketPriceAfterDiscount() * audienceCount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Reservation that = (Reservation) o;
+        return audienceCount == that.audienceCount && customer.equals(that.customer) && showing.equals(that.showing);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(customer, showing, audienceCount);
+    }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "customer=" + customer +
+                ", showing=" + showing +
+                ", audienceCount=" + audienceCount +
+                '}';
     }
 }

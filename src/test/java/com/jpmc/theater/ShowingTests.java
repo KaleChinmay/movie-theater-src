@@ -1,6 +1,8 @@
 package com.jpmc.theater;
 
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -8,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ShowingTests {
     @Test
@@ -114,5 +117,46 @@ public class ShowingTests {
         Showing showing = new Showing(turningRed, 1,
                 LocalDateTime.of(LocalDate.of(1,1,7), LocalTime.of(16, 0)));
         assertEquals(7, showing.calculateTicketPriceAfterDiscount());
+    }
+
+    @Test
+    void noDiscountTest(){
+        Movie turningRed = new Movie("Turning Red", "",Duration.ofMinutes(85), 10, 0);
+        Showing showing = new Showing(turningRed, 3,
+                LocalDateTime.of(LocalDate.of(1,1,8), LocalTime.of(16, 10)));
+        assertEquals(10, showing.calculateTicketPriceAfterDiscount());
+    }
+
+    @Test
+    void calculateTicketPriceAfterDiscountNullTest() {
+        Showing showing = null;
+        assertThrows(NullPointerException.class,()->showing.calculateTicketPriceAfterDiscount());
+    }
+
+    @Test
+    void humanReadableFormatCorrectOutput100MinutesTest(){
+        Duration duration = Duration.ofMinutes(100);
+        assertEquals("(1 hour 40 minutes)",Showing.humanReadableFormat(duration));
+    }
+
+    @Test
+    void humanReadableFormatCorrectOutput0MinutesTest(){
+        Duration duration = Duration.ofMinutes(0);
+        assertEquals("(0 hours 0 minutes)",Showing.humanReadableFormat(duration));
+    }
+
+    @Test
+    void humanReadableFormatExceptionTest(){
+        assertThrows(NullPointerException.class,()->Showing.humanReadableFormat(null));
+    }
+
+    @Test
+    void handlePluralWithPluralTest(){
+        assertEquals("s",Showing.handlePlural(13));
+    }
+
+    @Test
+    void handlePluralFor1Test(){
+        assertEquals("",Showing.handlePlural(1));
     }
 }

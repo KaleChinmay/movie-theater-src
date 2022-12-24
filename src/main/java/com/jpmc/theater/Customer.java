@@ -19,23 +19,24 @@ public class Customer {
 
     }
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (!(o instanceof Customer)) return false;
-//        Customer customer = (Customer) o;
-//        return Objects.equals(name, customer.name) && Objects.equals(id, customer.id);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(name, id);
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return "name: " + name;
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Customer customer = (Customer) o;
+        return name.equals(customer.name) && id.equals(customer.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+
+    @Override
+    public String toString() {
+        return "name: " + name;
+    }
 
 
     public String getName() {

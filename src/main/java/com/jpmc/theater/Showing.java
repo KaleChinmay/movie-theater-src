@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static Util.Constants.*;
@@ -100,7 +101,7 @@ public class Showing {
     }
 
 
-    public String humanReadableFormat(Duration duration) {
+    protected static String humanReadableFormat(Duration duration) {
         long hour = duration.toHours();
         long remainingMin = duration.toMinutes() - TimeUnit.HOURS.toMinutes(duration.toHours());
 
@@ -109,7 +110,7 @@ public class Showing {
     }
 
     // (s) postfix should be added to handle plural correctly
-    private String handlePlural(long value) {
+    protected static String handlePlural(long value) {
         if (value == 1) {
             return "";
         }
@@ -124,5 +125,18 @@ public class Showing {
                 + " " + this.showStartTime.toLocalTime() + " "
                 + movie.getTitle() + " " + humanReadableFormat(this.getMovie().getRunningTime())
                 + " $" + this.getMovieFee();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Showing showing = (Showing) o;
+        return sequenceOfTheDay == showing.sequenceOfTheDay && Objects.equals(movie, showing.movie) && Objects.equals(showStartTime, showing.showStartTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(movie, sequenceOfTheDay, showStartTime);
     }
 }
