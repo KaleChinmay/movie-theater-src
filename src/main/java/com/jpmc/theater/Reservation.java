@@ -43,7 +43,7 @@ public class Reservation {
     }
 
     /**
-     * Get total fee for audience count.
+     * Get total fee for audience count for the showing instance.
      * @return total fee double
      */
     public double totalFee() {

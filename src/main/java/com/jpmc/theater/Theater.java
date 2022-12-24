@@ -41,11 +41,12 @@ public class Theater {
      * @return Returns list of showings
      */
     public void initialize(String fileName){
+        LOGGER.info("Loading data from json file");
         LocalDate currentDate = provider.currentDate();
         JSONParser parser = new JSONParser();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         try {
-            //Config is part of resource folder
+            //Config json is part of resource folder, load data from json into showings hashmap
             FileReader configFile = new FileReader(getClass().getResource("/"+fileName).getPath());
             JSONObject parsedJsonObject = (JSONObject)parser.parse(configFile);
             JSONArray showingsJsonArray = (JSONArray) parsedJsonObject.get("showings");
@@ -69,18 +70,23 @@ public class Theater {
                 schedule.put(showingSequence,showing);
             }
         } catch (FileNotFoundException e) {
+            LOGGER.info("File not found");
             throw new RuntimeException(e);
         } catch (IOException e) {
+            LOGGER.info("Error while accessing file");
             throw new RuntimeException(e);
         } catch (ParseException e) {
+            LOGGER.info("Could not parse json file");
             throw new RuntimeException(e);
         } catch (Exception e) {
-        throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
+        LOGGER.info("Showing data loaded successfully.");
     }
 
     /**
-     * Reserve tickets for a customer
+     * Reserve tickets for a customer for given sequence number. One sequence number corresponds to one showing of that
+     * movie.
      * @param customer customer Object
      * @param sequence Sequence of the showing
      * @param howManyTickets count of tickets for that customer
@@ -91,10 +97,10 @@ public class Theater {
         LOGGER.info("Reserving...");
         try {
             //Return available showing
-            //Since array starts with zero index, do sequence -1.
+            //retrieve the showing instance using key - sequence number
             showing = schedule.get(sequence);
             if (showing==null){
-                throw new IllegalStateException("Not able to find any showing for given sequence " + sequence);
+                throw new RuntimeException();
             }
         } catch (RuntimeException ex) {
             LOGGER.info("Failed to reserve");
