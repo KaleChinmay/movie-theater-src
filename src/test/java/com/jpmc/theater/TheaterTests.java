@@ -27,10 +27,8 @@ public class TheaterTests {
                 LocalDateTime.of(LocalDate.of(1,1,1), LocalTime.of(16, 10))
         ));
         theater.setSchedule(map);
-        System.out.println(theater.getSchedule());
         Customer john = new Customer("John Doe", "id-12345");
         Reservation reservation = theater.reserve(john, sequence, 4);
-//        System.out.println("You have to pay " + reservation.getTotalFee());
         assertEquals(reservation.totalFee(), 32);
     }
 
