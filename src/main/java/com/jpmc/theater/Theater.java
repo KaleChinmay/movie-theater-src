@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -28,11 +28,11 @@ import static Util.Constants.CONFIG_FILE;
 public class Theater {
     private static final Logger LOGGER = Logger.getLogger(Theater.class.getName());
     LocalDateProvider provider;
-    private List<Showing> schedule;
+    private HashMap<Integer,Showing> schedule;
 
     public Theater(LocalDateProvider provider) {
         this.provider = provider;
-        schedule = this.initialize(CONFIG_FILE);
+        this.schedule = new HashMap<>();
     }
 
 
@@ -40,9 +40,7 @@ public class Theater {
      * Get and parse from JSON file in resource folder. Uses simple json parser.
      * @return Returns list of showings
      */
-    public List<Showing> initialize(String fileName){
-        LOGGER.info("Initializing... Getting movie showings data from file");
-        List<Showing> inputShowings = new ArrayList<>();
+    public void initialize(String fileName){
         LocalDate currentDate = provider.currentDate();
         JSONParser parser = new JSONParser();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -62,12 +60,13 @@ public class Theater {
                         (Double) movieJson.get("ticketPrice"),
                         ((Long) movieJson.get("specialCode")).intValue()
                 );
+                Integer showingSequence = ((Long) showingJson.get("sequence")).intValue();
                 Showing showing = new Showing(
                         movie,
-                        ((Long) showingJson.get("sequence")).intValue(),
+                        showingSequence,
                         LocalDateTime.of(currentDate, LocalTime.parse((String) showingJson.get("time"),formatter))
                 );
-                inputShowings.add(showing);
+                schedule.put(showingSequence,showing);
             }
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -77,9 +76,7 @@ public class Theater {
             throw new RuntimeException(e);
         } catch (Exception e) {
         throw new RuntimeException(e);
-    }
-        LOGGER.info("Successfully parsed JSON file into Showings object");
-        return inputShowings;
+        }
     }
 
     /**
@@ -95,8 +92,12 @@ public class Theater {
         try {
             //Return available showing
             //Since array starts with zero index, do sequence -1.
-            showing = schedule.get(sequence - 1);
+            showing = schedule.get(sequence);
+            if (showing==null){
+                throw new IllegalStateException("Not able to find any showing for given sequence " + sequence);
+            }
         } catch (RuntimeException ex) {
+            LOGGER.info("Failed to reserve");
             throw new IllegalStateException("Not able to find any showing for given sequence " + sequence);
         }
         LOGGER.info(howManyTickets+" tickets reserved Successfully");
@@ -109,8 +110,8 @@ public class Theater {
     public void printScheduleText() {
         System.out.println(provider.currentDate());
         System.out.println("===================================================");
-        schedule.forEach(s ->
-                System.out.println(s)
+        schedule.forEach((sequence,showing) ->
+                System.out.println(showing)
         );
         System.out.println("===================================================");
     }
@@ -124,6 +125,21 @@ public class Theater {
         System.out.println(scheduleJson);
     }
 
+    public LocalDateProvider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(LocalDateProvider provider) {
+        this.provider = provider;
+    }
+
+    public HashMap<Integer, Showing> getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(HashMap<Integer, Showing> schedule) {
+        this.schedule = schedule;
+    }
 
     /**
      * Entry point
@@ -131,6 +147,7 @@ public class Theater {
      */
     public static void main(String[] args) {
         Theater theater = new Theater(LocalDateProvider.singleton());
+        theater.initialize(CONFIG_FILE);
         theater.printScheduleText();
         theater.printScheduleJson();
     }
