@@ -1,0 +1,122 @@
+{
+  "showings":
+  [
+    {
+      "sequence": 1,
+      "date": "",
+      "time": "09:00:00",
+      "movie":
+      {
+        "title": "Turning Red",
+        "description": "",
+        "runningTime": 85,
+        "ticketPrice": 11.0,
+        "specialCode": 0
+      }
+    },
+    {
+      "sequence": 2,
+      "date": "",
+      "time": "11:00:00",
+      "movie":
+      {
+        "title": "Spider-Man: No Way Home",
+        "description": "",
+        "runningTime": 90,
+        "ticketPrice": 12.5,
+        "specialCode": 1
+      }
+    },
+    {
+      "sequence": 3,
+      "date": "",
+      "time": "12:50:00",
+      "movie":
+      {
+        "title": "The Batman",
+        "description": "",
+        "runningTime": 95,
+        "ticketPrice": 9.0,
+        "specialCode": 0
+      }
+    },
+    {
+      "sequence": 4,
+      "date": "",
+      "time": "14:30:00",
+      "movie":
+      {
+        "title": "Turning Red",
+        "description": "",
+        "runningTime": 85,
+        "ticketPrice": 11.0,
+        "specialCode": 0
+      }
+    },
+    {
+      "sequence": 5,
+      "date": "",
+      "time": "16:10:00",
+      "movie":
+      {
+        "title": "Spider-Man: No Way Home",
+        "description": "",
+        "runningTime": 90,
+        "ticketPrice": 12.5,
+        "specialCode": 1
+      }
+    },
+    {
+      "sequence": 6,
+      "date": "",
+      "time": "17:50:00",
+      "movie":
+      {
+        "title": "The Batman",
+        "description": "",
+        "runningTime": 95,
+        "ticketPrice": 9.0,
+        "specialCode": 0
+      }
+    },
+    {
+      "sequence": 7,
+      "date": "",
+      "time": "19:30:00",
+      "movie":
+      {
+        "title": "Turning Red",
+        "description": "",
+        "runningTime": 85,
+        "ticketPrice": 11.0,
+        "specialCode": 0
+      }
+    },
+    {
+      "sequence": 8,
+      "date": "",
+      "time": "21:10:00",
+      "movie":
+      {
+        "title": "Spider-Man: No Way Home",
+        "description": "",
+        "runningTime": 90,
+        "ticketPrice": 12.5,
+        "specialCode": 1
+      }
+    },
+    {
+      "sequence": 9,
+      "date": "",
+      "time": "23:00:00",
+      "movie":
+      {
+        "title": "The Batman",
+        "description": "",
+        "runningTime": 95,
+        "ticketPrice": 9.0,
+        "specialCode": 0
+      }
+    }
+  ]
+}

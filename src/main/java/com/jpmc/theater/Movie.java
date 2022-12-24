@@ -1,19 +1,23 @@
 package com.jpmc.theater;
 
 import java.time.Duration;
-import java.util.Objects;
+import java.util.*;
 
+/**
+ * Movie class
+ * Contains Title, Description, Run time, ticket price and movie code
+ */
 public class Movie {
-    private static int MOVIE_CODE_SPECIAL = 1;
-
+    protected static int MOVIE_CODE_SPECIAL = 1;
     private String title;
     private String description;
     private Duration runningTime;
     private double ticketPrice;
     private int specialCode;
 
-    public Movie(String title, Duration runningTime, double ticketPrice, int specialCode) {
+    public Movie(String title, String description, Duration runningTime, double ticketPrice, int specialCode) {
         this.title = title;
+        this.description = description;
         this.runningTime = runningTime;
         this.ticketPrice = ticketPrice;
         this.specialCode = specialCode;
@@ -23,37 +27,40 @@ public class Movie {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public Duration getRunningTime() {
         return runningTime;
+    }
+
+    public void setRunningTime(Duration runningTime) {
+        this.runningTime = runningTime;
     }
 
     public double getTicketPrice() {
         return ticketPrice;
     }
 
-    public double calculateTicketPrice(Showing showing) {
-        return ticketPrice - getDiscount(showing.getSequenceOfTheDay());
+    public void setTicketPrice(double ticketPrice) {
+        this.ticketPrice = ticketPrice;
     }
 
-    private double getDiscount(int showSequence) {
-        double specialDiscount = 0;
-        if (MOVIE_CODE_SPECIAL == specialCode) {
-            specialDiscount = ticketPrice * 0.2;  // 20% discount for special movie
-        }
+    public int getSpecialCode() {
+        return specialCode;
+    }
 
-        double sequenceDiscount = 0;
-        if (showSequence == 1) {
-            sequenceDiscount = 3; // $3 discount for 1st show
-        } else if (showSequence == 2) {
-
-            sequenceDiscount = 2; // $2 discount for 2nd show
-        }
-//        else {
-//            throw new IllegalArgumentException("failed exception");
-//        }
-
-        // biggest discount wins
-        return specialDiscount > sequenceDiscount ? specialDiscount : sequenceDiscount;
+    public void setSpecialCode(int specialCode) {
+        this.specialCode = specialCode;
     }
 
     @Override
@@ -61,15 +68,11 @@ public class Movie {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Movie movie = (Movie) o;
-        return Double.compare(movie.ticketPrice, ticketPrice) == 0
-                && Objects.equals(title, movie.title)
-                && Objects.equals(description, movie.description)
-                && Objects.equals(runningTime, movie.runningTime)
-                && Objects.equals(specialCode, movie.specialCode);
+        return Double.compare(movie.ticketPrice, ticketPrice) == 0 && specialCode == movie.specialCode && title.equals(movie.title) && Objects.equals(description, movie.description) && runningTime.equals(movie.runningTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, description, runningTime, ticketPrice, specialCode);
+        return Objects.hash(title, runningTime);
     }
 }

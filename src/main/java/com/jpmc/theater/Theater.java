@@ -1,11 +1,29 @@
 package com.jpmc.theater;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
+import static Util.Constants.CONFIG_FILE;
+
+/**
+ * Theatre class
+ * Contains Showing list, LocalDateProvider object, main function, reserve function and initialize json data function.
+ */
 public class Theater {
 
     LocalDateProvider provider;
@@ -13,62 +31,101 @@ public class Theater {
 
     public Theater(LocalDateProvider provider) {
         this.provider = provider;
-
-        Movie spiderMan = new Movie("Spider-Man: No Way Home", Duration.ofMinutes(90), 12.5, 1);
-        Movie turningRed = new Movie("Turning Red", Duration.ofMinutes(85), 11, 0);
-        Movie theBatMan = new Movie("The Batman", Duration.ofMinutes(95), 9, 0);
-        schedule = List.of(
-            new Showing(turningRed, 1, LocalDateTime.of(provider.currentDate(), LocalTime.of(9, 0))),
-            new Showing(spiderMan, 2, LocalDateTime.of(provider.currentDate(), LocalTime.of(11, 0))),
-            new Showing(theBatMan, 3, LocalDateTime.of(provider.currentDate(), LocalTime.of(12, 50))),
-            new Showing(turningRed, 4, LocalDateTime.of(provider.currentDate(), LocalTime.of(14, 30))),
-            new Showing(spiderMan, 5, LocalDateTime.of(provider.currentDate(), LocalTime.of(16, 10))),
-            new Showing(theBatMan, 6, LocalDateTime.of(provider.currentDate(), LocalTime.of(17, 50))),
-            new Showing(turningRed, 7, LocalDateTime.of(provider.currentDate(), LocalTime.of(19, 30))),
-            new Showing(spiderMan, 8, LocalDateTime.of(provider.currentDate(), LocalTime.of(21, 10))),
-            new Showing(theBatMan, 9, LocalDateTime.of(provider.currentDate(), LocalTime.of(23, 0)))
-        );
+        schedule = this.initialize(CONFIG_FILE);
     }
 
+
+    /**
+     * Get and parse from JSON file in resource folder. Uses simple json parser.
+     * @return Returns list of showings
+     */
+    public List<Showing> initialize(String fileName){
+        List<Showing> inputShowings = new ArrayList<>();
+        LocalDate currentDate = provider.currentDate();
+        JSONParser parser = new JSONParser();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+        try {
+            //Config is part of resource folder
+            FileReader configFile = new FileReader(getClass().getResource("/"+fileName).getPath());
+            JSONObject parsedJsonObject = (JSONObject)parser.parse(configFile);
+            JSONArray showingsJsonArray = (JSONArray) parsedJsonObject.get("showings");
+            //Parse showings from json object array
+            for (Object showingObj : showingsJsonArray){
+                JSONObject  showingJson = (JSONObject) showingObj;
+                JSONObject movieJson = (JSONObject) showingJson.get("movie");
+                Movie movie = new Movie(
+                        (String) movieJson.get("title"),
+                        (String) movieJson.get("description"),
+                        Duration.ofMinutes((Long)movieJson.get("runningTime")),
+                        (Double) movieJson.get("ticketPrice"),
+                        ((Long) movieJson.get("specialCode")).intValue()
+                );
+                Showing showing = new Showing(
+                        movie,
+                        ((Long) showingJson.get("sequence")).intValue(),
+                        LocalDateTime.of(currentDate, LocalTime.parse((String) showingJson.get("time"),formatter))
+                );
+                inputShowings.add(showing);
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return inputShowings;
+    }
+
+    /**
+     * Reserve tickets for a customer
+     * @param customer customer Object
+     * @param sequence Sequence of the showing
+     * @param howManyTickets count of tickets for that customer
+     * @return Returns reservation
+     */
     public Reservation reserve(Customer customer, int sequence, int howManyTickets) {
         Showing showing;
         try {
+            //Return available showing
+            //Since array starts with zero index, do sequence -1.
             showing = schedule.get(sequence - 1);
         } catch (RuntimeException ex) {
             ex.printStackTrace();
-            throw new IllegalStateException("not able to find any showing for given sequence " + sequence);
+            throw new IllegalStateException("Not able to find any showing for given sequence " + sequence);
         }
         return new Reservation(customer, showing, howManyTickets);
     }
 
-    public void printSchedule() {
+    /**
+     * Prints readable text format
+     */
+    public void printScheduleText() {
         System.out.println(provider.currentDate());
         System.out.println("===================================================");
         schedule.forEach(s ->
-                System.out.println(s.getSequenceOfTheDay() + ": " + s.getStartTime() + " " + s.getMovie().getTitle() + " " + humanReadableFormat(s.getMovie().getRunningTime()) + " $" + s.getMovieFee())
+                System.out.println(s)
         );
         System.out.println("===================================================");
     }
 
-    public String humanReadableFormat(Duration duration) {
-        long hour = duration.toHours();
-        long remainingMin = duration.toMinutes() - TimeUnit.HOURS.toMinutes(duration.toHours());
-
-        return String.format("(%s hour%s %s minute%s)", hour, handlePlural(hour), remainingMin, handlePlural(remainingMin));
+    /**
+     * Prints pretty Json String
+     */
+    public void printScheduleJson(){
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String scheduleJson = gson.toJson(schedule);
+        System.out.println(scheduleJson);
     }
 
-    // (s) postfix should be added to handle plural correctly
-    private String handlePlural(long value) {
-        if (value == 1) {
-            return "";
-        }
-        else {
-            return "s";
-        }
-    }
 
+    /**
+     * Entry point
+     * @param args No default args set
+     */
     public static void main(String[] args) {
         Theater theater = new Theater(LocalDateProvider.singleton());
-        theater.printSchedule();
+        theater.printScheduleText();
+        theater.printScheduleJson();
     }
 }

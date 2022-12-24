@@ -17,23 +17,40 @@ public class Customer {
 
         this.name = name;
 
-        }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Customer)) return false;
-        Customer customer = (Customer) o;
-        return Objects.equals(name, customer.name) && Objects.equals(id, customer.id);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, id);
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (!(o instanceof Customer)) return false;
+//        Customer customer = (Customer) o;
+//        return Objects.equals(name, customer.name) && Objects.equals(id, customer.id);
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(name, id);
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "name: " + name;
+//    }
+
+
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public String toString() {
-        return "name: " + name;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
